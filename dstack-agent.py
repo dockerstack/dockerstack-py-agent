@@ -4,6 +4,7 @@ import os
 import re
 import syslog
 import json
+import time
 from json import JSONEncoder
 
 # 3rd party
@@ -19,26 +20,41 @@ import system
 parser = SafeConfigParser()
 parser.read('dstack-agent.conf')
 
+jsondata={"root":"/opt","folder":"dockerstack.github.io"}
 
 ip = parser.get('apiserver', 'ip')
 port = parser.get('apiserver', 'port')
 
-print ip,port
+polling = parser.get('main','polling')
+polling_time = parser.get('main','polling_time')
 
-x = system.SystemInfo()
+jsondata={"root":"/opt","folder":"dockerstack.github.io"}
 
-sysinfo= x.getsystem_info()
-sysmem= x.getsystem_memory()
+class DockerAgent():	
 
-data=[sysmem,sysinfo]
+	def api_version(self):
+		r = requests.get('http://%s:%s/api/info'%(ip,port))
+		print r.status_code
+		print r.text
 
-print json.dumps(data, ensure_ascii=False)
+	def post_ServerData(self,jsondata):
 
-def api_version():
-	r = requests.get('http://%s:%s/api/info'%(ip,port))
-	print r.status_code
+		try:
+			url = 'http://%s:%s/api/filefetch/readdir/folder'%(ip,port)
+			r = requests.post(url, data=json.dumps(jsondata))
+			print r.text
+		except Exception,e:
+			print e
 
-api_version()
+def main():
+	while True:
+		app = DockerAgent()
+		app.api_version()
+		app.post_ServerData(jsondata)
+
+		time.sleep(int(polling_time))
 
 
-#if __name__ == "__main__":
+if __name__ == "__main__":
+	
+	main()

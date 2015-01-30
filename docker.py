@@ -1,19 +1,27 @@
-#import syslog
+# import syslog
 import logging
 from docker import Client
- 
- 
-#Logging Class Initialization
- 
+
+
+# Logging Class Initialization
+
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
- 
-# Docker Client Base URL
-c = Client(base_url='unix://var/run/docker.sock')
- 
- 
+
+try:
+    value = "sock"
+    dockerurl = parser.get('main', 'docker_url')
+    dockerport = parser.get('main', 'docker_port')
+    if re.search("(so.*)", value) in docker_url:
+        c = Client(base_url=dockerurl)
+    else:
+        c = Client(base_url="http://%s:%s" % (dockerurl, dockerport)
+except Exception, e:
+    logger.debug(e)
+
+
 class DockerSystemInfo():
- 
+
     def docker_get_version(self):
         """
         Get the Docker Service Version Information
@@ -23,11 +31,17 @@ class DockerSystemInfo():
             return c.version()
         except Exception, e:
             logger.info(e)
-       
- 
-    def docker_image_list(self):
-        return "Hello World"
- 
+
+
+     def docker_image_list(self):
+        """
+        Get the List of images available in the local Registry
+        """
+        try:
+            return c.images()
+        except Exception, e:
+            logger.debug(e)
+
     def docker_running_containers(self):
         """
         Will get the information about the running
@@ -38,9 +52,9 @@ class DockerSystemInfo():
         except Exception, e:
             logger.info(e)
         return "Hello World"
- 
+
     def docker_container_start(self):
         return "Hello World"
- 
+
     def docker_container_remove(self):
         return "Hello World"
