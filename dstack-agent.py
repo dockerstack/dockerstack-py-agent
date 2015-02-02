@@ -28,7 +28,7 @@ port = parser.get('apiserver', 'port')
 polling = parser.get('main','polling')
 polling_time = parser.get('main','polling_time')
 
-jsondata={"root":"/opt","folder":"dockerstack.github.io"}
+#jsondata={"root":"/opt","folder":"dockerstack.github.io"}
 
 class DockerAgent():	
 
@@ -40,7 +40,7 @@ class DockerAgent():
 	def post_ServerData(self,jsondata):
 
 		try:
-			url = 'http://%s:%s/api/filefetch/readdir/folder'%(ip,port)
+			url = 'http://%s:%s/api/datafetch/server/details'%(ip,port)
 			r = requests.post(url, data=json.dumps(jsondata))
 			print r.text
 		except Exception,e:
@@ -49,6 +49,20 @@ class DockerAgent():
 def main():
 	while True:
 		app = DockerAgent()
+		sys = system.SystemInfo()
+
+		sysinfo= sys.getsystem_info()
+		sysmem= sys.getsystem_memory()
+		sysdata = [sysmem,sysinfo]
+
+		print sysinfo["ip"]
+
+		jsondata = {"userdata":{"server":sysinfo,"memory":sysmem}}
+
+		data = json.dumps(jsondata, sort_keys=True)
+
+		print data
+
 		app.api_version()
 		app.post_ServerData(jsondata)
 

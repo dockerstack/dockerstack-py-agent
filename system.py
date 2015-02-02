@@ -65,14 +65,15 @@ class SystemInfo():
         cpus = multiprocessing.cpu_count()
         ip = get_lan_ip()
 
-        data = {"Server":{
-            "IP": ip,
-            "Processor": processor,
-            "Arc": arctype,
-            "Cpus": cpus,
-            "OS": os_name,
-            "OS_version": os_version
-        }}
+        data = {
+            "ip": ip, 
+            "processor": processor,
+            "arc": arctype, 
+            "cpus": cpus,                       
+            "os": os_name,
+            "os_version": os_version
+                        
+        }
        
         return data
 
@@ -84,11 +85,12 @@ class SystemInfo():
         freemem = psutil.avail_phymem()
         usedmem = psutil.used_phymem()
 
-        data = {"Memory":{
-            "Total": totalmem,
-            "Used": usedmem,
-            "Free": freemem
-        }}
+        data = {
+            "total": str(totalmem),
+            "free": str(freemem),
+            "used": str(usedmem)
+            
+        }
         
         return data
 
